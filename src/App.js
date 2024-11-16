@@ -1,24 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import {useEffect, useState} from "react";
+import {ListItem, List, Modal} from "./components";
+import {getUsersTree} from './api';
+import {ContextProvider} from './store'
 
 function App() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    getUsersTree()
+      .then(data => {
+        setData(data);
+      });
+  }, []);
+
+  if (!data) {
+    return <div>no data</div>;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ContextProvider>
+      <List>
+        <ListItem data={data} parentId={data.id} dataName={data.name} />
+
+        <Modal handleUpdate={setData} />
+      </List>
+    </ContextProvider>
   );
 }
 
